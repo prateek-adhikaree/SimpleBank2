@@ -13,7 +13,7 @@ contract Bank {
     mapping (address => AccountStruct) private balances;
     
     function createAccount(string name) public payable returns (bool) {
-        AccountStruct memory acc;
+        AccountStruct acc;
         acc.name = name;
         
         balances[msg.sender] = acc;

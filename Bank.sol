@@ -10,17 +10,16 @@ contract Bank {
     
     // dictionary that maps addresses to balances
     // always be careful about overflow attacks with numbers
-    mapping (address => uint) private balances;
-
-    // Events - publicize actions to external listeners
-    event LogDepositMade(address accountAddress, uint amount);
+    mapping (address => AccountStruct) private balances;
 
     /// @notice Create the person's bank account
     /// @param name person's name
     /// @return true if creation successful
     function createAccount(string name) public payable returns (bool) {
-        AccountStruct storage acc;
+        AccountStruct memory acc;
         acc.name = name;
+        
+        balances[msg.sender] = acc;
         
         return true;
     }
@@ -30,9 +29,6 @@ contract Bank {
     function deposit() public payable returns (uint) {
         AccountStruct memory acc = balances[msg.sender];
         acc.currentBalance += msg.value;
-
-        // fire event
-        emit LogDepositMade(msg.sender, msg.value);
 
         return acc.currentBalance;
     }

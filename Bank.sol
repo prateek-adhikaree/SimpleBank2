@@ -3,28 +3,40 @@
 pragma solidity 0.4.25;
 
 contract Bank {
+    address public owner = msg.sender;
+    
+    struct AccountStruct {
+        string name;
+        uint currentBalance;
+    }
+    
     // dictionary that maps addresses to balances
     // always be careful about overflow attacks with numbers
-    mapping (address => uint) private balances;
-    
-    address public owner = msg.sender;
+    mapping (address => AccountStruct) private balances;
 
     // Events - publicize actions to external listeners
     event LogDepositMade(address accountAddress, uint amount);
 
-    constructor () public {
+    /// @notice Create the person's bank account
+    /// @param name person's name
+    /// @return true if creation successful
+    function createAccount(string name) public payable returns (bool) {
+        AccountStruct storage acc;
+        acc.name = name;
         
+        return true;
     }
 
     /// @notice Deposit tokens into bank
     /// @return The balance of the user after the deposit is made
     function deposit() public payable returns (uint) {
-        balances[msg.sender] += msg.value;
+        AccountStruct memory acc = balances[msg.sender];
+        acc.currentBalance += msg.value;
 
         // fire event
         emit LogDepositMade(msg.sender, msg.value);
 
-        return balances[msg.sender];
+        return acc.currentBalance;
     }
 
     /// @notice Withdraw token from bank
@@ -32,26 +44,28 @@ contract Bank {
     /// @param withdrawAmount amount you want to withdraw
     /// @return The balance remaining for the user
     function withdraw(uint withdrawAmount) public returns (uint remainingBal) {
-        if(balances[msg.sender] >= withdrawAmount) {
+        AccountStruct memory acc = balances[msg.sender];
+        if(acc.currentBalance >= withdrawAmount) {
             // Note the way we deduct the balance right away, before sending - due to
             // the risk of a recursive call that allows the caller to request an amount greater
             // than their balance
-            balances[msg.sender] -= withdrawAmount;
+            acc.currentBalance -= withdrawAmount;
 
             if (!msg.sender.send(withdrawAmount)) {
                 // increment back only on fail, as may be sending to contract that
                 // has overridden 'send' on the receipt end
-                balances[msg.sender] += withdrawAmount;
+                acc.currentBalance += withdrawAmount;
             }
         }
 
-        return balances[msg.sender];
+        return acc.currentBalance;
     }
 
     /// @notice Get balance
     /// @return The balance of the user
     // 'constant' prevents function from editing state variables;
     function balance() public constant returns (uint) {
-        return balances[msg.sender];
+        AccountStruct memory acc = balances[msg.sender];
+        return acc.currentBalance;
     }
 }

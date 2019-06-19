@@ -51,9 +51,4 @@ contract Bank {
         }
         return acc.currentBalance;
     }
-    
-    function balance() public constant returns (uint) {
-        AccountStruct memory acc = balances[msg.sender];
-        return acc.currentBalance;
-    }
 }

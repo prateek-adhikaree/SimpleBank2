@@ -1,4 +1,4 @@
-// First, a simple Bank contract
+// A simple Bank contract
 // Allows deposits, withdrawals, and balance checks
 pragma solidity 0.4.25;
 
@@ -8,13 +8,8 @@ contract Bank {
         uint currentBalance;
     }
     
-    // dictionary that maps addresses to balances
-    // always be careful about overflow attacks with numbers
     mapping (address => AccountStruct) private balances;
-
-    /// @notice Create the person's bank account
-    /// @param name person's name
-    /// @return true if creation successful
+    
     function createAccount(string name) public payable returns (bool) {
         AccountStruct memory acc;
         acc.name = name;
@@ -27,6 +22,8 @@ contract Bank {
     function deposit() public payable returns (uint) {
         AccountStruct memory acc = balances[msg.sender];
         
+        assert(balances[msg.sender].currentBalance != 0);
+        
         if (! slabReached(msg.sender)) {
             acc.currentBalance += msg.value;
         }
@@ -35,5 +32,26 @@ contract Bank {
     
     function slabReached(address accountAddress) internal view returns (bool) {
         return balances[accountAddress].currentBalance == 100;
+    }
+    
+    function assert(bool condition) public {
+        // do some assertions here based on the system requirements
+    }
+    
+    function withdraw(uint withdrawAmount) public returns (uint remainingBal) {
+        AccountStruct memory acc = balances[msg.sender];
+        if(acc.currentBalance >= withdrawAmount) {
+            acc.currentBalance -= withdrawAmount;
+
+            if (!msg.sender.send(withdrawAmount)) {
+                acc.currentBalance += withdrawAmount;
+            }
+        }
+        return acc.currentBalance;
+    }
+    
+    function balance() public constant returns (uint) {
+        AccountStruct memory acc = balances[msg.sender];
+        return acc.currentBalance;
     }
 }

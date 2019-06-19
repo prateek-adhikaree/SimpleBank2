@@ -3,8 +3,6 @@
 pragma solidity 0.4.25;
 
 contract Bank {
-    address public owner = msg.sender;
-    
     struct AccountStruct {
         string name;
         uint currentBalance;
@@ -12,7 +10,7 @@ contract Bank {
     
     // dictionary that maps addresses to balances
     // always be careful about overflow attacks with numbers
-    mapping (address => AccountStruct) private balances;
+    mapping (address => uint) private balances;
 
     // Events - publicize actions to external listeners
     event LogDepositMade(address accountAddress, uint amount);

@@ -3,6 +3,8 @@
 pragma solidity 0.4.25;
 
 contract Bank {
+    address owner = msg.sender;
+    
     struct AccountStruct {
         string name;
         uint currentBalance;

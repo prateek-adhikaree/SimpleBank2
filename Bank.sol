@@ -15,6 +15,7 @@ contract Bank {
     function createAccount(string name) public returns (bool) {
         AccountStruct acc;
         acc.name = name;
+        acc.currentBalance = 0;
         
         balances[msg.sender] = acc;
         

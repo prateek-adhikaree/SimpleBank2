@@ -1,5 +1,5 @@
 // A simple Bank contract
-// Allows deposits, withdrawals, and balance checks
+// Allows creating account, deposits and withdrawals
 pragma solidity 0.4.25;
 
 contract Bank {
